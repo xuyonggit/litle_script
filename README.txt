@@ -1,1 +1,1 @@
-我的一些Python核shell小脚本合集
+我的一些Python和shell小脚本合集
