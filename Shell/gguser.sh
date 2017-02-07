@@ -2,7 +2,7 @@
 # 用途：
 # Linux系统用于添加，删除用户脚本
 # 使用方法：
-# gguser add/del 用户名
+# 运行：gguser add/del 用户名
 #==============================config=================================
 rsa_path='/data/worken/operator/rsafile'
 
