@@ -43,13 +43,13 @@ if [ -z ${PID} ];then
     ${JBOSS_HOME}/bin/standalone.sh > /dev/null &
     rm -f /logs/jboss1.log
     ln -s ${JBOSS_HOME}/standalone/log/server.log /logs/jboss1.log
-    echo -e "\033[33m小智提醒： \033[0m正在启动${JBOSS_HOME##*/}中......"
+    echo -e "\033[33m小智提醒： \033[0m正在启动$"${JBOSS_HOME##*/}"中......"
     sleep 2
+    # 判断服务状态
+    ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务已成功启动。。。" || echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务启动失败，请尝试手动启动。。。"
 else
-    echo -e "\033[33m小智提醒： \033[0m{JBOSS_HOME##*/}已启动，PID：${PID}"
+    echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"已启动，PID：${PID}"
 fi
-# 判断服务状态
-ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m{JBOSS_HOME##*/}服务已成功启动。。。" || echo -e "\033[33m小智提醒： \033[0m{JBOSS_HOME##*/}服务启动失败，请尝试手动启动。。。"
 }
 
 # 停止函数
@@ -60,12 +60,12 @@ else
     export JBOSS_HOME="/data/opt/jboss"$1""
 fi
 ps aux | grep -v grep | grep "${JBOSS_HOME}""/" | awk '{print $2}' | xargs kill -9
-echo -e "\033[33m小智提醒： \033[0m正在停止${JBOSS_HOME##*/}......"
+echo -e "\033[33m小智提醒： \033[0m正在停止"${JBOSS_HOME##*/}"......"
 sleep 2
 cd ${JBOSS_HOME}/standalone/tmp
 rm -rf vfs/*
 # 判断服务状态
-ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m{JBOSS_HOME##*/}服务已成功停止。。。" || echo -e "\033[33m小智提醒： \033[0m{JBOSS_HOME##*/}服务停止失败，请尝试手动kill。。。"
+ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务已成功停止。。。" || echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务停止失败，请尝试手动kill。。。"
 
 }
 
