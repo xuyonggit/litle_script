@@ -8,7 +8,7 @@
 # **********************************************
 # To : 启动，停止，重启jboss
 # **********************************************
-set -x
+
 #============================== config =================================
 # 获取当前时间
 LOGTIME=`date -d "0 days ago" +"%Y%m%d%H%M%S"`
@@ -19,7 +19,8 @@ SERVERDIR="/data/opt"
 #============================== function =================================
 # 帮助函数：
 function help(){
-echo -e """\033[33m小智提醒：\033[0mUsages:
+echo -e """Hello,大家好，我叫小智。
+\033[33m小智提醒：\033[0mUsages:
             ${0} start 服务序号（不限个数）    启动一个或多个服务
             ${0} stop  服务序号（不限个数）    停止一个或多个服务
             ${0} restart 服务序号（不限个数）  重启一个或多个服务
@@ -43,7 +44,7 @@ if [ -z ${PID} ];then
     ${JBOSS_HOME}/bin/standalone.sh > /dev/null &
     rm -f /logs/jboss1.log
     ln -s ${JBOSS_HOME}/standalone/log/server.log /logs/jboss1.log
-    echo -e "\033[33m小智提醒： \033[0m正在启动$"${JBOSS_HOME##*/}"中......"
+    echo -e "\033[33m小智提醒： \033[0m正在启动"${JBOSS_HOME##*/}"中......"
     sleep 2
     # 判断服务状态
     ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务已成功启动。。。" || echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务启动失败，请尝试手动启动。。。"
@@ -62,8 +63,11 @@ fi
 ps aux | grep -v grep | grep "${JBOSS_HOME}""/" | awk '{print $2}' | xargs kill -9
 echo -e "\033[33m小智提醒： \033[0m正在停止"${JBOSS_HOME##*/}"......"
 sleep 2
+# 删除缓存
 cd ${JBOSS_HOME}/standalone/tmp
 rm -rf vfs/*
+# 删除日志链接文件
+rm -f /logs/"${JBOSS_HOME##*/}".log
 # 判断服务状态
 ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务停止失败，请尝试手动kill。。。" || echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务已成功停止。。。"
 
