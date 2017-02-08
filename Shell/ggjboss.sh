@@ -77,6 +77,7 @@ case $1 in
     do
         if [[ ${i} != $1 ]];then
             start ${i}
+            sleep 2
         fi
     done
     ;;
@@ -85,6 +86,7 @@ case $1 in
     do
         if [[ ${i} != $1 ]];then
             stop ${i}
+            sleep 2
         fi
     done
     ;;
