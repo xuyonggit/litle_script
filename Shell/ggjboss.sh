@@ -42,8 +42,8 @@ fi
 if [ -z ${PID} ];then
     cd ${JBOSS_HOME}/standalone
     ${JBOSS_HOME}/bin/standalone.sh > /dev/null &
-    rm -f /logs/jboss1.log
-    ln -s ${JBOSS_HOME}/standalone/log/server.log /logs/jboss1.log
+    rm -f /logs/"${JBOSS_HOME##*/}".log
+    ln -s ${JBOSS_HOME}/standalone/log/server.log /logs/"${JBOSS_HOME##*/}".log
     echo -e "\033[33m小智提醒： \033[0m正在启动"${JBOSS_HOME##*/}"中......"
     sleep 2
     # 判断服务状态
