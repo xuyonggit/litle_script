@@ -75,21 +75,27 @@ case $1 in
     start)  # 启动
     for i in $*
     do
-        start ${i}
+        if [[ ${i} != $1 ]];then
+            start ${i}
+        fi
     done
     ;;
     stop)   # 停止
     for i in $*
     do
-        stop ${i}
+        if [[ ${i} != $1 ]];then
+            stop ${i}
+        fi
     done
     ;;
     restart)    # 重启
     for i in $*
     do
-        stop ${i}
-        sleep 3
-        start ${i}
+        if [[ ${i} != $1 ]];then
+            stop ${i}
+            sleep 3
+            start ${i}
+        fi
     done
     ;;
     *)help
