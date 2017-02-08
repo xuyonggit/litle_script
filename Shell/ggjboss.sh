@@ -65,7 +65,7 @@ sleep 2
 cd ${JBOSS_HOME}/standalone/tmp
 rm -rf vfs/*
 # 判断服务状态
-ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务已成功停止。。。" || echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务停止失败，请尝试手动kill。。。"
+ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务停止失败，请尝试手动kill。。。" || echo -e "\033[33m小智提醒： \033[0m"${JBOSS_HOME##*/}"服务已成功停止。。。"
 
 }
 
@@ -73,23 +73,30 @@ ps aux | grep "${JBOSS_HOME}""/" | grep -v grep > /dev/null && echo -e "\033[33m
 #============================== main =================================
 case $1 in
     start)  # 启动
+    echo "============================================================"
     for i in $*
     do
         if [[ ${i} != $1 ]];then
             start ${i}
         fi
+        echo
     done
+    echo "============================================================"
     ;;
     stop)   # 停止
+    echo "============================================================"
     for i in $*
     do
         if [[ ${i} != $1 ]];then
             stop ${i}
             sleep 2
         fi
+        echo
     done
+    echo "============================================================"
     ;;
     restart)    # 重启
+    echo "============================================================"
     for i in $*
     do
         if [[ ${i} != $1 ]];then
@@ -97,7 +104,9 @@ case $1 in
             sleep 3
             start ${i}
         fi
+        echo
     done
+    echo "============================================================"
     ;;
     *)help
     ;;
