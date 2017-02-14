@@ -18,9 +18,9 @@ filelist = os.listdir('/data/workon/data/serverfiledate')
 
 # 帮助函数
 def help():
-    print "Usage:"
-    print "\t# search [搜索的内容]"
-    print "\t# -help  Get help"
+    print("Usage:")
+    print("\t# search [搜索的内容]")
+    print("\t# -help  Get help")
 
 if len(sys.argv) != 2 or sys.argv[1] == '-help':
     help()
@@ -41,14 +41,14 @@ os.system('clear')
 
 # 搜索结果为空显示：
 if len(searchdatalist) == 0:
-    print "\033[1;34m主机:\033[0m NULL:\t" + "\033[1;34m目录:\033[0m NULL:"
-    print "*************************************************************************"
-    print "\033[5;31m没有符合要求的数据!\033[0m"
+    print("\033[1;34m主机:\033[0m NULL:\t" + "\033[1;34m目录:\033[0m NULL:")
+    print("*************************************************************************")
+    print("\033[5;31m没有符合要求的数据!\033[0m")
 
 # 搜索结果不为空显示：
 for i in sorted(searchdatalist.keys()):
     dir1 = i.split("_")[0]
     IP = i.split("_")[1]
-    print "\033[1;34m主机:\033[0m %s:\t" % IP + "\033[1;34m目录:\033[0m %s:" % dir1
-    print "*************************************************************************"
-    print '\033[33m' + searchdatalist[i] + '\033[0m'
+    print("\033[1;34m主机:\033[0m %s:\t" % IP + "\033[1;34m目录:\033[0m %s:" % dir1)
+    print("*************************************************************************")
+    print('\033[33m' + searchdatalist[i] + '\033[0m')
