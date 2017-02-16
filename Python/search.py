@@ -31,7 +31,7 @@ else:
 searchdatalist = {}
 
 for i in filelist:
-    out = os.popen('cat /data/workon/data/serverfiledate/%s | grep -i %s' % (i,var))
+    out = os.popen('cat /data/workon/data/serverfiledate/%s | grep -i %s' % (i, var))
     searchdatalist[i] = re.sub(var, '\033[1;31m%s\033[0m\033[33m' % var, out.read())
 
 for i in searchdatalist.keys():
