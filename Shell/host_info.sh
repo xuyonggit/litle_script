@@ -54,6 +54,10 @@ info_mem_Total=$(grep "MemTotal" /proc/meminfo | awk '{printf("%.2f\n",$2/1024/1
 # get swapTotal
 info_mem_swapTotal=$(grep "SwapTotal" /proc/meminfo | awk '{printf("%.2f\n",$2/1024/1024)}')
 
+# ******** BLOCK INFO
+# Block list
+info_block_list=($(ls /sys/block/ | grep [a-z]d[a-z]))
+
 # ******** Other INFO
 info_selinux=$(getenforce)
 # print info
@@ -70,7 +74,13 @@ clear && echo -e """*************** INFO ***************
 \033[33m支持超线程: \033[0m${info_cpu_ltcores:-"${info_null}"}
 ----- MEM INFO -----
 \033[33m最大内存: \033[0m${info_mem_Total:-"${info_null}"} "G"
-\033[33mSwap大小: \033[0m${info_mem_swapTotal:-"${info_null}"} "G"
+\033[33mSwap大小: \033[0m${info_mem_swapTotal:-"${info_null}"} "G""""
+echo "----- BLOCK INFO -----"
+for block in ${info_block_list[@]};do
+	size=$(cat /sys/block/${block}/size)
+	echo -e "\033[33m${block}: \033[0m$[${size}/1024/1024/2]" "G"
+done
+echo -e """
 ----- Other INFO -----
 \033[33mSelinux: \033[0m${info_selinux:-"${info_null}"} 
 
