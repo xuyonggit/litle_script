@@ -46,45 +46,52 @@ function download_install(){
     Dir=${install_Dir}/redis
     # 编译安装
     cd ${install_Dir}/redis && make && make install
+	# 创建redis节点目录
+	mkdir  ${install_Dir}/redis/cluster
     # 设置环境变量
     sed -i '/\/data\/redis\/src/d' /etc/profile
     echo -e "PATH=\${PATH}:/data/redis/src/\t\t# redis  $(date)" >> /etc/profile && source /etc/profile
 }
 
+function config(){
+	pass
+}
+
 # ------ MAIN ------
 case $1 in
-install)
-read -p "请输入安装目录[default:/data]:" install_Dir
-while [ -d ${install_Dir:-"/data"}/redis ]
-do
-    read -p "目录已存在，是否删除[y/n]:" check_1
-    if [ ${check_1}="y|Y|yes|Yes|YEs|YES|YeS" ];then
-        rm -rf ${install_Dir:-"/data"}/redis
-    else
-        read -p "请重新输入安装目录[default:/data]:" install_Dir
-    fi
-done
-
-
-read -p "请输入安装版本[default:3.0.6]" install_version
-# 执行下载安装函数
-download_install ${install_Dir:-"/data"} ${install_version:-"3.0.6"}
-clear && echo -e \
-"""============================================
+	install)
+		read -p "请输入安装目录[default:/data]:" install_Dir
+		while [ -d ${install_Dir:-"/data"}/redis ]
+		do
+		    read -p "目录已存在，是否删除[y/n]:" check_1
+		    if [ ${check_1}="y|Y|yes|Yes|YEs|YES|YeS" ];then
+		        rm -rf ${install_Dir:-"/data"}/redis
+		    else
+		        read -p "请重新输入安装目录[default:/data]:" install_Dir
+		    fi
+		done
+		
+		
+		read -p "请输入安装版本[default:3.0.6]" install_version
+		# 执行下载安装函数
+		download_install ${install_Dir:-"/data"} ${install_version:-"3.0.6"}
+		clear && echo -e \
+		"""============================================
 Redis_Version: ${install_version:-"3.0.6"}
 Install_Dir: ${Dir}
 ============================================
 是否进行redis配置[y/n]: """
-read check_2
-if [ ${check_2}="y|Y|yes|Yes|YEs|YES|YeS" ];then
-    continue
-else
-    exit
-fi
-echo "continue"
-;;
+		read check_2
+		if [ ${check_2}="y|Y|yes|Yes|YEs|YES|YeS" ];then
+		    continue
+		else
+		    exit
+		fi
+		echo "continue"
+	;;
 
 
-*)usage_help
-;;
+	*)
+		usage_help
+	;;
 esac
