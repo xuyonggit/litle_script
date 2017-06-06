@@ -13,8 +13,8 @@ import logging
 logging.basicConfig(filename = '/data/zabbix/logs/send_weixin.log', level = logging.INFO)
 # 定义认证corpid
 corp = {
-'corpid': 'wx8d5d437d11f20628', 
-'corpsecret': 'OFR5g1ALXdXWttMMF994Vjy1ufjbTgEE1iAYmauCYLKL8AB8vEYxUom2hL3PzETs'
+'corpid': '', 
+'corpsecret': ''
 }
 # FUNCTION =======================================
 def get_token():
