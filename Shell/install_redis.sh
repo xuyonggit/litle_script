@@ -20,6 +20,7 @@ function usage_help(){
 echo -e """Usage:
 \t${0/*\//} install\tInstall Redis
 \t${0/*\//} config \tConfig Redis
+\t\tconfig [install path] [port:6370] [number]
 """
 }
 
@@ -47,14 +48,99 @@ function download_install(){
     # 编译安装
     cd ${install_Dir}/redis && make && make install
 	# 创建redis节点目录
-	mkdir  ${install_Dir}/redis/cluster
-    # 设置环境变量
+	if [ ! -d ${install_Dir}/redis/cluster ];then
+		mkdir  ${install_Dir}/redis/cluster
+    fi
+	# 设置环境变量
     sed -i '/\/data\/redis\/src/d' /etc/profile
     echo -e "PATH=\${PATH}:/data/redis/src/\t\t# redis  $(date)" >> /etc/profile && source /etc/profile
 }
 
 function config(){
-	pass
+	# 安装目录
+	local install_Dir=${1:-"/data/redis"}
+	# 启动端口基数
+	local redis_port=${2:-"6379"}
+	# 启动进程个数
+	local redis_num=${3:-"1"}
+	# bind IP
+	IP=$(ip a | grep inet | grep -v 127.0.0.1 | awk '{print $2}')
+	# conf main config
+	if [ ! -f ${install_Dir}/cluster/comm_redis.conf ];then
+		cat >> ${install_Dir}/cluster/comm_redis.conf <<EOF
+daemonize yes
+tcp-backlog 511
+timeout 0
+tcp-keepalive 0
+loglevel notice
+databases 16
+save 900 1
+save 300 10
+save 60 10000
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+slave-serve-stale-data yes
+slave-read-only yes
+repl-diskless-sync no
+repl-diskless-sync-delay 5
+repl-disable-tcp-nodelay no
+slave-priority 100
+appendonly no
+appendfilename "appendonly.aof"
+appendfsync everysec
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+aof-load-truncated yes
+lua-time-limit 5000
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+latency-monitor-threshold 0
+notify-keyspace-events ""
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+set-max-intset-entries 512
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+hll-sparse-max-bytes 3000
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+hz 10
+aof-rewrite-incremental-fsync yes	
+EOF
+fi
+for num in $(seq ${redis_num});do
+	# 计算端口
+	PORT=$[${redis_port}+${num}]
+	mkdir ${install_Dir}/cluster/${PORT}
+	if [ -f ${install_Dir}/cluster/${PORT}/redis.conf ];then
+		mv ${install_Dir}/cluster/${PORT}/redis.conf ${install_Dir}/cluster/${PORT}/redis.conf.`date +%F`.bak
+	fi
+	cat >> ${install_Dir}/cluster/${PORT}/redis.conf <<EOF
+include ${install_Dir}/cluster/comm_redis.conf
+pidfile ${install_Dir}/cluster/${PORT}/redis_${PORT}.pid
+port ${PORT}
+bind ${IP/\/*/}
+logfile ${install_Dir}/cluster/${PORT}/redis_${PORT}.log
+dir ./
+EOF
+	# 启动服务
+	${install_Dir}/src/redis-server ${install_Dir}/cluster/${PORT}/redis.conf
+	echo "redis server cluster:${PORT} started"
+	echo -e """INFO:
+Main config :${install_Dir}/cluster/comm_redis.conf
+pidfile     :${install_Dir}/cluster/${PORT}/redis_${PORT}.pid
+Bind ip port:${IP/\/*/}:${PORT}
+logfile     :${install_Dir}/cluster/${PORT}/redis_${PORT}.log
+data_DIR    :${install_Dir}/cluster/${PORT}
+"""
+done
 }
 
 # ------ MAIN ------
@@ -73,23 +159,25 @@ case $1 in
 		
 		
 		read -p "请输入安装版本[default:3.0.6]" install_version
+		read -p "请输入端口基数[default:6370]" redis_port
+		read -p "请输入需要启动服务个数[default:1]" redis_number
 		# 执行下载安装函数
 		download_install ${install_Dir:-"/data"} ${install_version:-"3.0.6"}
 		clear && echo -e \
 		"""============================================
 Redis_Version: ${install_version:-"3.0.6"}
 Install_Dir: ${Dir}
-============================================
-是否进行redis配置[y/n]: """
-		read check_2
-		if [ ${check_2}="y|Y|yes|Yes|YEs|YES|YeS" ];then
-		    continue
-		else
-		    exit
-		fi
-		echo "continue"
+============================================"""
+		config ${install_Dir:-"/data/redis"} ${redis_port:="6370"} ${redis_number:-1}
+		echo "============================================"
 	;;
-
+	config)
+		# install_Dir
+		install_Dir=${2}
+		redis_port=${3}
+		redis_number=${4}
+		config ${install_Dir:-"/data/redis"} ${redis_port:-"6370"} ${redis_number:-"1"}
+	;;
 
 	*)
 		usage_help
