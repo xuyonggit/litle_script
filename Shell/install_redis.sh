@@ -52,13 +52,13 @@ function download_install(){
 		mkdir  ${install_Dir}/redis/cluster
     fi
 	# 设置环境变量
-    sed -i '/\/data\/redis\/src/d' /etc/profile
-    echo -e "PATH=\${PATH}:/data/redis/src/\t\t# redis  $(date)" >> /etc/profile && source /etc/profile
+    sed -i '/${install_Dir}\/redis\/src/d' /etc/profile
+    echo -e "PATH=\${PATH}:${install_Dir}/redis/src/\t\t# redis  $(date)" >> /etc/profile && source /etc/profile
 }
 
 function config(){
 	# 安装目录
-	local install_Dir=${1:-"/data/redis"}
+	local install_Dir=${1:-"/data"}
 	# 启动端口基数
 	local redis_port=${2:-"6379"}
 	# 启动进程个数
@@ -66,8 +66,8 @@ function config(){
 	# bind IP
 	IP=$(ip a | grep inet | grep -v 127.0.0.1 | awk '{print $2}')
 	# conf main config
-	if [ ! -f ${install_Dir}/cluster/comm_redis.conf ];then
-		cat >> ${install_Dir}/cluster/comm_redis.conf <<EOF
+	if [ ! -f ${install_Dir}/redis/cluster/comm_redis.conf ];then
+		cat >> ${install_Dir}/redis/cluster/comm_redis.conf <<EOF
 daemonize yes
 tcp-backlog 511
 timeout 0
@@ -118,27 +118,27 @@ fi
 for num in $(seq ${redis_num});do
 	# 计算端口
 	PORT=$[${redis_port}+${num}]
-	mkdir ${install_Dir}/cluster/${PORT}
-	if [ -f ${install_Dir}/cluster/${PORT}/redis.conf ];then
-		mv ${install_Dir}/cluster/${PORT}/redis.conf ${install_Dir}/cluster/${PORT}/redis.conf.`date +%F`.bak
+	mkdir ${install_Dir}/redis/cluster/${PORT}
+	if [ -f ${install_Dir}/redis/cluster/${PORT}/redis.conf ];then
+		mv ${install_Dir}/redis/cluster/${PORT}/redis.conf ${install_Dir}/cluster/${PORT}/redis.conf.`date +%F`.bak
 	fi
-	cat >> ${install_Dir}/cluster/${PORT}/redis.conf <<EOF
-include ${install_Dir}/cluster/comm_redis.conf
-pidfile ${install_Dir}/cluster/${PORT}/redis_${PORT}.pid
+	cat >> ${install_Dir}/redis/cluster/${PORT}/redis.conf <<EOF
+include ${install_Dir}/redis/cluster/comm_redis.conf
+pidfile ${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.pid
 port ${PORT}
 bind ${IP/\/*/}
-logfile ${install_Dir}/cluster/${PORT}/redis_${PORT}.log
+logfile ${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.log
 dir ./
 EOF
 	# 启动服务
-	${install_Dir}/src/redis-server ${install_Dir}/cluster/${PORT}/redis.conf
+	${install_Dir}/redis/src/redis-server ${install_Dir}/redis/cluster/${PORT}/redis.conf
 	echo "redis server cluster:${PORT} started"
 	echo -e """INFO:
-Main config :${install_Dir}/cluster/comm_redis.conf
-pidfile     :${install_Dir}/cluster/${PORT}/redis_${PORT}.pid
+Main config :${install_Dir}/redis/cluster/comm_redis.conf
+pidfile     :${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.pid
 Bind ip port:${IP/\/*/}:${PORT}
-logfile     :${install_Dir}/cluster/${PORT}/redis_${PORT}.log
-data_DIR    :${install_Dir}/cluster/${PORT}
+logfile     :${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.log
+data_DIR    :${install_Dir}/redis/cluster/${PORT}
 """
 done
 }
@@ -168,7 +168,7 @@ case $1 in
 Redis_Version: ${install_version:-"3.0.6"}
 Install_Dir: ${Dir}
 ============================================"""
-		config ${install_Dir:-"/data/redis"} ${redis_port:="6370"} ${redis_number:-1}
+		config ${install_Dir:-"/data"} ${redis_port:="6370"} ${redis_number:-1}
 		echo "============================================"
 	;;
 	config)
@@ -176,7 +176,7 @@ Install_Dir: ${Dir}
 		install_Dir=${2}
 		redis_port=${3}
 		redis_number=${4}
-		config ${install_Dir:-"/data/redis"} ${redis_port:-"6370"} ${redis_number:-"1"}
+		config ${install_Dir:-"/data"} ${redis_port:-"6370"} ${redis_number:-"1"}
 	;;
 
 	*)
