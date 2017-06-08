@@ -58,6 +58,7 @@ function download_install(){
     wget ${redis_link}redis-${install_version}.tar.gz -P ${install_Dir}
     # 解压缩
     tar -zxf ${install_Dir}/redis-${install_version}.tar.gz -C ${install_Dir} && mv  ${install_Dir}/redis-${install_version} ${install_Dir}/redis
+	rm ${install_Dir}/redis-${install_version}.tar.gz
     # 定义redis根目录 
     Dir=${install_Dir}/redis
     # 编译安装
@@ -130,14 +131,15 @@ hz 10
 aof-rewrite-incremental-fsync yes	
 EOF
 fi
-for num in $(seq ${redis_num});do
-	# 计算端口
-	PORT=$[${redis_port}+${num}]
-	mkdir ${install_Dir}/redis/cluster/${PORT}
-	if [ -f ${install_Dir}/redis/cluster/${PORT}/redis.conf ];then
-		mv ${install_Dir}/redis/cluster/${PORT}/redis.conf ${install_Dir}/cluster/${PORT}/redis.conf.`date +%F`.bak
-	fi
-	cat >> ${install_Dir}/redis/cluster/${PORT}/redis.conf <<EOF
+if [ ${redis_num} -ne 0 ];then
+	for num in $(seq ${redis_num});do
+		# 计算端口
+		PORT=$[${redis_port}+${num}]
+		mkdir ${install_Dir}/redis/cluster/${PORT}
+		if [ -f ${install_Dir}/redis/cluster/${PORT}/redis.conf ];then
+			mv ${install_Dir}/redis/cluster/${PORT}/redis.conf ${install_Dir}/cluster/${PORT}/redis.conf.`date +%F`.bak
+		fi
+		cat >> ${install_Dir}/redis/cluster/${PORT}/redis.conf <<EOF
 include ${install_Dir}/redis/cluster/comm_redis.conf
 pidfile ${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.pid
 port ${PORT}
@@ -145,17 +147,20 @@ bind ${IP/\/*/}
 logfile ${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.log
 dir ./
 EOF
-	# 启动服务
-	${install_Dir}/redis/src/redis-server ${install_Dir}/redis/cluster/${PORT}/redis.conf
-	echo "redis server cluster:${PORT} started"
-	echo -e """INFO:
+		# 启动服务
+		${install_Dir}/redis/src/redis-server ${install_Dir}/redis/cluster/${PORT}/redis.conf
+		echo "redis server cluster:${PORT} started"
+		echo -e """INFO:
 Main config :${install_Dir}/redis/cluster/comm_redis.conf
 pidfile     :${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.pid
 Bind ip port:${IP/\/*/}:${PORT}
 logfile     :${install_Dir}/redis/cluster/${PORT}/redis_${PORT}.log
 data_DIR    :${install_Dir}/redis/cluster/${PORT}
 """
-done
+		done
+else
+	echo "No service was started!"
+fi
 }
 
 # ------ MAIN ------
