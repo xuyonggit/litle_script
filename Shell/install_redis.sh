@@ -21,24 +21,38 @@ echo -e """Usage:
 \t${0/*\//} install\tInstall Redis
 \t${0/*\//} config \tConfig Redis
 \t\tconfig [install path] [port:6370] [number]
+\t${0/*\//} list   \tList version list
 """
 }
 
 # 获取redis版本帮助函数
-function redis_version_help(){
-    wget ${redis_link} -O /tmp/redis_tmp.txt >> /dev/null
-    local version_list=$(cat /tmp/redis_tmp.txt |awk -F"href=\"" '{print $2}' | awk -F"\">" '{print $1}' | grep redis)
-    for version in ${version_list[@]}:
-    do
-	echo -e "${version}"
-    done
-}
+#function redis_version_help(){
+#    wget ${redis_link} -O /tmp/redis_tmp.txt >> /dev/null
+#    local version_list=$(cat /tmp/redis_tmp.txt |awk -F"href=\"" '{print $2}' | awk -F"\">" '{print $1}' | grep redis)
+#    for version in ${version_list[@]}:
+#    do
+#	echo -e "${version}"
+#    done
+#}
 
+# List redis version
+function List(){
+	if [ ! -f "/tmp/redis.list.tmp" ];then
+		wget -nv -O /tmp/redis.list.tmp http://download.redis.io/releases/ >> /dev/null
+	fi
+	REDIS_LIST=($(cat /tmp/redis.list.tmp | grep ^\<tr\> | awk '{print $6}' |awk -F\" '{print $2}'| awk -F"redis-" '{print $2}'| awk -F".tar.gz" '{print $1}' | xargs))
+	echo -e "可选版本\n==============================================\n| version \t| URL \t\t|"
+	for V in ${REDIS_LIST[@]};do
+		echo -e "| ${V} \t| http://download.redis.io/releases/redis-${V}.tar.gz  \t|"
+	done
+	rm /tmp/redis.list.tmp
+}
 
 # 下载安装redis函数
 function download_install(){
     local install_Dir=${1}
     local install_version=${2}
+	yum -y install wget gcc gcc-c++
     # 下载tar包
     wget ${redis_link}redis-${install_version}.tar.gz -P ${install_Dir}
     # 解压缩
@@ -153,14 +167,19 @@ case $1 in
 		    if [ ${check_1}="y|Y|yes|Yes|YEs|YES|YeS" ];then
 		        rm -rf ${install_Dir:-"/data"}/redis
 		    else
-		        read -p "请重新输入安装目录[default:/data]:" install_Dir
+		        read -p "请重新输入安装目录[default:/data]: " install_Dir
 		    fi
 		done
 		
 		
-		read -p "请输入安装版本[default:3.0.6]" install_version
-		read -p "请输入端口基数[default:6370]" redis_port
-		read -p "请输入需要启动服务个数[default:1]" redis_number
+		read -p "请输入安装版本[default:3.0.6|enter 'p' to list version]: " install_version
+		while [ ${install_version:-3.0.6} = 'p' ]
+		do
+			List
+			read -p "请输入安装版本[default:3.0.6|enter 'p' to list version]: " install_version
+		done
+		read -p "请输入端口基数[default:6370]: " redis_port
+		read -p "请输入需要启动服务个数[default:1]: " redis_number
 		# 执行下载安装函数
 		download_install ${install_Dir:-"/data"} ${install_version:-"3.0.6"}
 		clear && echo -e \
@@ -178,7 +197,9 @@ Install_Dir: ${Dir}
 		redis_number=${4}
 		config ${install_Dir:-"/data"} ${redis_port:-"6370"} ${redis_number:-"1"}
 	;;
-
+	list)
+		List
+	;;
 	*)
 		usage_help
 	;;
