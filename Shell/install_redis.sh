@@ -37,15 +37,16 @@ echo -e """Usage:
 
 # List redis version
 function List(){
-	if [ ! -f "/tmp/redis.list.tmp" ];then
-		wget -nv -O /tmp/redis.list.tmp http://download.redis.io/releases/ >> /dev/null
+	random=$(date +%s%N)
+	if [ ! -f "/tmp/redis.list_${random}.tmp" ];then
+		wget -nv -O /tmp/redis.list_${random}.tmp http://download.redis.io/releases/ >> /dev/null
 	fi
-	REDIS_LIST=($(cat /tmp/redis.list.tmp | grep ^\<tr\> | awk '{print $6}' |awk -F\" '{print $2}'| awk -F"redis-" '{print $2}'| awk -F".tar.gz" '{print $1}' | xargs))
+	REDIS_LIST=($(cat /tmp/redis.list_${random}.tmp | grep ^\<tr\> | awk '{print $6}' |awk -F\" '{print $2}'| awk -F"redis-" '{print $2}'| awk -F".tar.gz" '{print $1}' | xargs))
 	echo -e "可选版本\n==============================================\n| version \t| URL \t\t|"
 	for V in ${REDIS_LIST[@]};do
 		echo -e "| ${V} \t| http://download.redis.io/releases/redis-${V}.tar.gz  \t|"
 	done
-	rm /tmp/redis.list.tmp
+	rm /tmp/redis.list_${random}.tmp
 }
 
 # 下载安装redis函数
