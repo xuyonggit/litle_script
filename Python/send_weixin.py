@@ -45,3 +45,4 @@ if __name__ == "__main__":
     logging.info("EVENT_ID:" + EVENT_ID)
     CONTENT = sys.argv[3]
     send_msg(CONTENT)
+
