@@ -12,8 +12,8 @@ import logging
 # 定义log目录与级别
 logging.basicConfig(filename='/data/zabbix/logs/send_weixin.log', level=logging.INFO)
 # 定义认证corpid
-corpid = ""
-corpsecret = ""
+corpid = ''
+corpsecret = ''
 corp = dict(corpid=corpid, corpsecret=corpsecret)
 
 
@@ -27,14 +27,14 @@ def get_token():
 
 def send_msg(CONTENT):
     url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + get_token()
-    values = """{
+    values = """{{
         "toparty": "2",
         "msgtype": "text",
         "agentid": 1,
-        "text":{
-            "content": "%s",
-        },"safe": "0"
-    }""" % str(CONTENT)
+        "text":{{
+            "content": "{}",
+        }},"safe": "0"
+    }}""".format(str(CONTENT))
     logging.info("MESSAGE:" + values)
     req = requests.post(url, data=values)
     logging.info(req.text)
