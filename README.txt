@@ -3,3 +3,4 @@ Some litle script
 mac test2
 branch test2
 branch test3
+branch test4
