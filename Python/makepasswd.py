@@ -87,6 +87,6 @@ class main():
 
 if __name__ == '__main__':
     C = main()
-    print(C.level1())
-    print(C.level2())
-    print(C.level3())
+    print("level1: {}".format(C.level1()))
+    print("level2: {}".format(C.level2()))
+    print("level3: {}".format(C.level3()))
