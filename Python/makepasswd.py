@@ -1,5 +1,6 @@
 # _*_ coding:utf-8 _*_
 import random
+import argparse
 
 
 # 字符菜单
@@ -87,6 +88,14 @@ class main():
 
 if __name__ == '__main__':
     C = main()
-    print("level1: {}".format(C.level1()))
-    print("level2: {}".format(C.level2()))
-    print("level3: {}".format(C.level3()))
+    parser = argparse.ArgumentParser(description='manual to this script')
+    parser.add_argument('--level', type=int, default=3)
+    args = parser.parse_args()
+    if args.level == 1:
+        print("level1: {}".format(C.level1()))
+    elif args.level == 2:
+        print("level2: {}".format(C.level2()))
+    elif args.level == 3:
+        print("level3: {}".format(C.level3()))
+    else:
+        print("Usage: makepasswd.py --level=[1|2|3] default: 2")
