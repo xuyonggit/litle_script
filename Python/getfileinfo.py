@@ -1,4 +1,5 @@
 #!/bin/env python3
+# -*- coding: utf-8 -*-
 """
 desc : linux系统下获取目录下文件详情：创建者，创建时间，最新修改时间
 usages: getfileinfo         操作当前目录
