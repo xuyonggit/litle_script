@@ -11,12 +11,12 @@ redis_conf = {
     'port': 6379
 }
 redis_nodes = [
-    {'host':'10.10.22.114','port':6370},
-    {'host':'10.10.22.114','port': 6371},
-    {'host':'10.10.22.114','port': 6372},
-    {'host':'10.10.22.114','port': 6373},
-    {'host':'10.10.22.114','port': 6374},
-    {'host':'10.10.22.114','port': 6375}
+    {'host': '10.10.22.114', 'port': 6370},
+    {'host': '10.10.22.114', 'port': 6371},
+    {'host': '10.10.22.114', 'port': 6372},
+    {'host': '10.10.22.114', 'port': 6373},
+    {'host': '10.10.22.114', 'port': 6374},
+    {'host': '10.10.22.114', 'port': 6375}
 ]
 def getSessionKeys():
     l1 = []
@@ -38,6 +38,7 @@ def writeNewRedisCluster(datalist=[]):
     for d in datalist:
         for key,value in d.items():
             redisconn.set(key, value)
+
 
 def readNewRedisCluster():
     try:
