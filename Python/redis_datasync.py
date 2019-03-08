@@ -47,7 +47,7 @@ def readNewRedisCluster():
         print("connection Failed")
         sys.exit(1)
     data = redisconn.keys("user:sessionId*")
-    print(len(data),data)
+    print(len(data), data)
 
 if __name__ == '__main__':
     #writeNewRedisCluster(getSessionKeys())
