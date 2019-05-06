@@ -1,0 +1,32 @@
+# 自动补齐对应项目的备份目录
+#
+complete -F _a_complete_finc rollback.sh
+
+_a_complete_finc(){
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  
+  Pwd=$(cd `/usr/bin/dirname ${COMP_WORDS}`;pwd)
+  project="${Pwd##*/}"
+  opts="$(getbaklist /data/backup/codebak/${project})"
+
+  if [[ ${cur} == * ]];then
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
+  fi
+}
+getbaklist(){
+    opts=()
+    backdir=${1}
+    for d1 in $(ls ${backdir})
+    do
+        for d2 in $(ls ${backdir}/${d1})
+        do
+	    opts+="${d1}_${d2}"
+	    opts+=" "
+	done
+    done
+    printf "$opts"
+}
