@@ -1,0 +1,15 @@
+[download]
+user =
+server =
+password =
+sender =
+filepath =
+remote_host =
+remote_port =
+remote_user =
+remote_key =
+notify_name =
+# wechat config
+CORP_ID =
+APP_ID =
+APP_SECRET =
